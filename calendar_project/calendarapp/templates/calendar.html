@@ -1,0 +1,140 @@
+{% extends "base.html" %} {% block title %} Calendar {%endblock %} 
+{% block content %}
+<div class="calendar">
+    <div class="header">
+        <button id="prevMonth">&lt; Prev</button>
+        <h2 id="currMonth"></h2>
+        <button id="nextMonth">Next &gt;</button>
+    </div>
+
+    <div class="weekdays">
+    <div>Sun</div>
+    <div>Mon</div>
+    <div>Tue</div>
+    <div>Wed</div>
+    <div>Thu</div>
+    <div>Fri</div>
+    <div>Sat</div>
+    </div>
+    <div class="daysContainer"></div>
+</div>
+
+<style>
+    .calendar {
+        text-align: center;
+        margin: 30px;
+        border: 2px solid rgb(117, 137, 151);
+        padding: 10px;
+        margin: 0px 10% 0px 10%;
+    }
+
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .weekdays {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        margin-bottom: 10px;
+    }
+
+    .weekdays div {
+        padding: 5px;
+        font-weight: bold;
+    }
+
+    .daysContainer {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+    }
+
+    .daysContainer div {
+        border: 2px solid rgb(117, 137, 151);
+        margin: -1px;
+        padding: 5px;
+        height: 80px;
+    }
+
+    .daysContainer div.today {
+        background-color: rgb(204, 218, 231);
+    }
+</style>
+
+<script type="text/javascript">
+    // set constant names of months
+    const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+    // get current date and store data
+    const currDate = new Date();
+    let currMonth = currDate.getMonth();
+    let currYear = currDate.getFullYear();
+
+    // identify and save variables for parts of the calendar
+    const header = document.getElementById("currMonth");
+    const daysContainer = document.querySelector(".daysContainer");
+
+    //function to build calendar in html
+    function buildCalendar() {
+        const firstDayOfMonth = new Date(currYear, currMonth, 1).getDay();
+        const daysInMonth = new Date(currYear, currMonth + 1, 0).getDate();
+
+        // add month and year to top of calendar
+        header.textContent = `${monthNames[currMonth]} ${currYear}`;
+
+        // reset possible previous build of calendar
+        daysContainer.innerHTML = "";
+
+        // build empty boxes at the start of the calendar- to ensure 1st of month starts on correct weekday
+        for (let i = 0; i < firstDayOfMonth; i++) {
+            const emptyDay = document.createElement("div");
+            daysContainer.appendChild(emptyDay);
+        }
+
+        // build calendar days
+        for (let day = 1; day <= daysInMonth; day++) {
+            const dateCells = document.createElement("div");
+            dateCells.textContent = day;
+
+            // find and set current day
+            if (currDate.getDate() === day && currDate.getMonth() === currMonth && currDate.getFullYear() === currYear) {
+            dateCells.classList.add("today");
+        }
+
+        // append contructed datecells into container
+        daysContainer.appendChild(dateCells);
+        }
+    }
+
+    // button logic
+
+    // click listener
+    document.getElementById("prevMonth").addEventListener("click", () => {
+        // test to see if need to trip to new year
+        if (currMonth === 0) {
+            currYear--;
+            currMonth = 11;
+        } else {
+            currMonth--;
+        }
+        // re-render calendar
+        buildCalendar();
+    });
+
+    document.getElementById("nextMonth").addEventListener("click", () => {
+        // test to see if need to trip to new year
+        if (currMonth === 11) {
+            currYear++;
+            currMonth = 0;
+        } else {
+            currMonth++;
+        }
+        // re-render calendar
+        buildCalendar();
+    });
+
+    // initial render calendar
+    buildCalendar();
+</script>
+{% endblock %}
